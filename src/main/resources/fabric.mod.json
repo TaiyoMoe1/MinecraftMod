@@ -1,18 +1,13 @@
 {
 	"schemaVersion": 1,
 	"id": "prueba-mod",
-	"version": "1.1.0",
-	"name": "Auto Chest Fill",
-	"description": "Automatically sorts chest inventories with a single key press. Simple, fast and lightweight.",
+	"version": "${version}",
+	"name": "Prueba Mod",
+	"description": "Guarda automáticamente items en cofres cercanos",
 	"authors": [
-		"Tai"
+		"Fabian"
 	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/prueba-mod/icon.png",
+	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -22,13 +17,6 @@
 			"miprimermod.PruebaModClient"
 		]
 	},
-	"mixins": [
-		"prueba-mod.mixins.json",
-		{
-			"config": "prueba-mod.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
 		"minecraft": "1.21.1",

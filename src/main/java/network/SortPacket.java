@@ -1,20 +1,23 @@
 package miprimermod.network;
 
+import miprimermod.InventorySorter;
+import miprimermod.PruebaMod;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import miprimermod.InventorySorter;
+import net.minecraft.server.level.ServerPlayer;
 
 public record SortPacket() implements CustomPacketPayload {
 
     public static final Type<SortPacket> TYPE =
-            new Type<>(new ResourceLocation("miprimermod", "sort"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(
+                    PruebaMod.MOD_ID, "sort_items"
+            ));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, SortPacket> CODEC =
+    public static final StreamCodec<FriendlyByteBuf, SortPacket> CODEC =
             StreamCodec.unit(new SortPacket());
 
     @Override
@@ -22,19 +25,21 @@ public record SortPacket() implements CustomPacketPayload {
         return TYPE;
     }
 
-    // CLIENTE → enviar
-    public static void send() {
-        ClientPlayNetworking.send(new SortPacket());
-    }
-
-    // SERVER → recibir
     public static void register() {
+
         PayloadTypeRegistry.playC2S().register(TYPE, CODEC);
 
-        ServerPlayNetworking.registerGlobalReceiver(TYPE, (payload, context) -> {
-            context.player().server.execute(() -> {
-                InventorySorter.sort(context.player());
-            });
-        });
+        ServerPlayNetworking.registerGlobalReceiver(
+                TYPE,
+                (packet, context) -> {
+
+                    ServerPlayer player = context.player();
+
+                    // 🔥 FORMA CORRECTA EN 1.21.1
+                    player.server.execute(() -> {
+                        InventorySorter.sortNearbyChests(player);
+                    });
+                }
+        );
     }
 }
